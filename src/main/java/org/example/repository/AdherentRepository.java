@@ -10,7 +10,9 @@ import org.springframework.data.repository.query.Param;
 // @Repository
 public interface AdherentRepository extends JpaRepository<Adherent, Integer> {
     Adherent findByEmailAndMotDePasse(String email, String motDePasse);
-    
+
+    Adherent findByEmail(String email);
+
     @Query("SELECT a.dateFinPenalite FROM Adherent a WHERE a.id = :idAdherent")
     LocalDate findDateFinPenalite(@Param("idAdherent") Integer idAdherent);
 

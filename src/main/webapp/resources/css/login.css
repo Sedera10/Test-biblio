@@ -1,0 +1,79 @@
+body {
+    background-color: #E3E3E3;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('/Biblio/resources/img/fond2.jpg');
+    background-size: cover;         
+    background-repeat: no-repeat;  
+    background-position: center;
+    background-attachment: fixed;
+}
+
+img { width: 100%;}
+
+.login-container {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border: 1px solid #E0C993;
+    width: 100%;
+    max-width: 400px;
+    z-index: 10;
+    overflow: hidden;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.login-container h2 {
+    color: #C10100;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: calc(1.725rem + .9vw);
+}
+
+input,.btn-primary {
+    border-radius: 20px;
+}
+
+.form-control:focus {
+    border-color: #C2680D;
+    box-shadow: 0 0 0 0.2rem rgba(194, 104, 13, 0.25);
+}
+
+.btn-primary {
+    background-color: #C2680D;
+    border-color: #C2680D;
+}
+
+.form-label {
+    font-size: 18px;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #a75400;
+    border-color: #a75400;
+}
+
+.links {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.links a {
+    color: rgb(6, 1, 22);
+    text-decoration: none;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.toggle-role {
+    cursor: pointer;
+    color: #C10100;
+}

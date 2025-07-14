@@ -1,8 +1,6 @@
 package org.example.models;
 
 import javax.persistence.*;
-
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -32,15 +30,16 @@ public class Livre {
     @Column(name = "pret_domicile")
     private boolean pretDomicile = true;
 
-    @OneToMany(mappedBy = "livre", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Exemplaire> exemplaires = new HashSet<>();
+    @OneToMany(mappedBy = "livre", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<Exemplaire> exemplaires;
 
     @OneToMany(mappedBy = "livre", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Reservation> reservations;
 
     // === Constructeurs ===
 
-    public Livre() {}
+    public Livre() {
+    }
 
     public Livre(String titre, String auteur, String editeur, String isbn, Integer limiteAge, boolean pretDomicile) {
         this.titre = titre;

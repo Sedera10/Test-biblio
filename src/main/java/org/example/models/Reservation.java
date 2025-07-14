@@ -30,11 +30,16 @@ public class Reservation {
     @Column(name = "date_fin_reservation")
     private LocalDate dateFinReservation;
 
+    @Column(nullable = false)
+    private boolean valide = false;
+
     // === Constructeurs ===
 
-    public Reservation() {}
+    public Reservation() {
+    }
 
-    public Reservation(Adherent adherent, Livre livre, TypePret typePret, LocalDate dateReservation, LocalDate dateFinReservation) {
+    public Reservation(Adherent adherent, Livre livre, TypePret typePret, LocalDate dateReservation,
+            LocalDate dateFinReservation) {
         this.adherent = adherent;
         this.livre = livre;
         this.typePret = typePret;
@@ -90,5 +95,13 @@ public class Reservation {
 
     public void setDateFinReservation(LocalDate dateFinReservation) {
         this.dateFinReservation = dateFinReservation;
+    }
+
+    public boolean isValide() {
+        return valide;
+    }
+
+    public void setValide(boolean valide) {
+        this.valide = valide;
     }
 }

@@ -21,23 +21,27 @@ public class Penalite {
     public Integer getIdPenalite() {
         return idPenalite;
     }
+
     public String getMotif() {
         return motif;
     }
+
     public Pret getPret() {
         return pret;
     }
-    
 
     public void setApplique(boolean applique) {
         this.applique = applique;
     }
+
     public void setIdPenalite(Integer idPenalite) {
         this.idPenalite = idPenalite;
     }
+
     public void setMotif(String motif) {
         this.motif = motif;
     }
+
     public void setPret(Pret pret) {
         this.pret = pret;
     }
