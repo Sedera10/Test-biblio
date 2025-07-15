@@ -106,6 +106,89 @@
                         </div>
                     </div>
                 </div>
+                 <!-- Règles de réservation -->
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <strong>Règles de réservation (quota par type d’adhérent)</strong>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Type Adhérent</th>
+                                    <th>Quota max</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="regle" items="${regleReservations}">
+                                    <tr>
+                                        <td>${regle.id}</td>
+                                        <td>${regle.typeAdherent.nom}</td>
+                                        <td>
+                                            <form method="post" action="${pageContext.request.contextPath}/admin/config/updateRegleReservation" class="d-flex gap-2">
+                                                <input type="hidden" name="id" value="${regle.id}" />
+                                                <input type="number" name="quotaMax" value="${regle.quotaMax}" class="form-control form-control-sm" style="width: 90px;" />
+                                                <button type="submit" class="btn btn-sm btn-primary">Modifier</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Gestion des types d'adhérents -->
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <strong>Gestion des types d’adhérents</strong>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="${pageContext.request.contextPath}/admin/config/typeAdherent" class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Nom du type</label>
+                                <input type="text" name="nom" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Quota de réservation</label>
+                                <input type="number" name="quotaMax" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Jours de pénalité</label>
+                                <input type="number" name="joursPenalite" class="form-control" required />
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Ajouter/Mettre à jour</button>
+                            </div>
+                        </form>
+
+                        <hr />
+
+                        <h5 class="mt-4">Types enregistrés :</h5>
+                        <ul class="list-group">
+                            <c:forEach var="t" items="${typeAdherents}">
+                               <li class="list-group-item">
+                                <form method="post" action="${pageContext.request.contextPath}/admin/config/typeAdherent" class="row row-cols-lg-auto g-2 align-items-center">
+                                    <div class="col">
+                                        <input type="text" name="nom" class="form-control form-control-sm" value="${t.nom}" readonly />
+                                    </div>
+                                    <div class="col">
+                                        <input type="number" name="quotaMax" class="form-control form-control-sm" value="${t.quotaMax}" />
+                                    </div>
+                                    <div class="col">
+                                        <input type="number" name="joursPenalite" class="form-control form-control-sm" value="${t.joursPenalite}" />
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-primary" type="submit">Enregistrer</button>
+                                    </div>
+                                </form>
+                            </li>
+
+                            </c:forEach>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>

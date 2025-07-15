@@ -1,6 +1,9 @@
 package org.example.models;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Set;
 
 @Entity
@@ -20,11 +23,13 @@ public class Exemplaire {
 
     // Relation Exemplaire → Livre (plusieurs exemplaires pour un livre)
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_livre", nullable = false)
     private Livre livre;
 
     // Relation Exemplaire → Prêt (un exemplaire peut être prêté plusieurs fois)
     @OneToMany(mappedBy = "exemplaire", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Pret> prets;
 
     // === Constructeurs ===

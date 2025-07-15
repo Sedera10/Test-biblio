@@ -7,17 +7,25 @@ import org.example.models.Penalite;
 import org.example.models.Pret;
 import org.example.models.Prolongement;
 import org.example.models.ReglePret;
+import org.example.models.Rendu;
+import org.example.models.Inscription;
 import org.example.models.Reservation;
+import org.example.models.TypeAdherent;
 import org.example.models.TypePret;
 import org.example.repository.AdherentRepository;
 import org.example.repository.ExemplaireRepository;
+import org.example.repository.InscriptionRepository;
 import org.example.repository.LivreRepository;
 import org.example.repository.PenaliteRepository;
 import org.example.repository.PretRepository;
 import org.example.repository.ProlongementRepository;
 import org.example.repository.ReglePretRepository;
+import org.example.repository.RenduRepository;
 import org.example.repository.ReservationRepository;
+import org.example.repository.TypeAdherentRepository;
 import org.example.repository.TypePretRepository;
+
+import org.example.service.ReservationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,17 +55,27 @@ public class PretService {
     @Autowired
     private AdherentRepository adherentRepository;
 
+    
+    @Autowired
+    private RenduRepository renduRepository;
+
     @Autowired
     private ProlongementRepository prolongementRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;
 
+     @Autowired
+    private ReservationService reservationService;
+
     @Autowired
     private PenaliteRepository penaliteRepository;
 
     @Autowired
     private CalendrierService calendrierService;
+
+    @Autowired
+    private InscriptionRepository inscriptionRepository;
 
     public void enregistrerPret(Pret pret) {
         pretRepository.save(pret);
@@ -71,47 +89,68 @@ public class PretService {
         return pretRepository.findAll();
     }
 
-    public String effectuerPret(int idAdherent, int idLivre, String typePret) {
+    public String effectuerPret(int idAdherent, int idLivre, String typePret, LocalDate daty) {
         Adherent adherent = adherentRepository.findById(idAdherent).orElse(null);
         if (adherent == null) return "Adhérent introuvable";
 
+        if (adherent.getDateFinPenalite() != null && !adherent.getDateFinPenalite().isBefore(LocalDate.now())) {
+            throw new RuntimeException("L'adhérent a une pénalité en cours.");
+        }
+
+        Inscription inscription = inscriptionRepository.findTopByAdherentOrderByDateFinDesc(adherent);
+        if (inscription == null || inscription.getDateFin().isBefore(LocalDate.now())) {
+            return "L'abonnement n'est plus valide.";
+        }
+
+        TypeAdherent typeAdherent = adherent.getTypeAdherent();
+        long quota = typeAdherent.getQuotaMax();
+        long nombrePret =pretRepository.countPretsEnCoursParAdherent(adherent.getId());
+        if (nombrePret >= quota) {
+            return "Quota de réservation atteint.";
+        }
+
         Livre livre = livreRepository.findById(idLivre).orElse(null);
         if (livre == null) return "Livre introuvable";
-    
+
         List<Exemplaire> disponibles = exemplaireRepository.findExemplairesDisponiblesParLivre(idLivre);
         if (disponibles.isEmpty()) return "Aucun exemplaire disponible";
+
         Exemplaire exemplaireDispo = disponibles.get(0);
-    
+
         boolean domicile = typePret.equalsIgnoreCase("DOMICILE");
         if (domicile && !livre.isPretDomicile()) {
             return "Ce livre n'est pas autorisé pour un prêt à domicile";
         }
-        
-        // ReglePret regle = reglePretRepository
-        //     .findByTypeAdherentAndTypePret(adherent.getTypeAdherent().getNom(), typePret);
+
         ReglePret regle = reglePretRepository.findRegle(adherent.getTypeAdherent().getNom(), typePret);
         if (regle == null) return "Aucune règle de prêt définie";
-    
-        LocalDate debut = LocalDate.now();
+
+        // Date début = daty si non null, sinon aujourd'hui
+        LocalDate debut = (daty != null) ? daty : LocalDate.now();
         LocalDate retour = debut.plusDays(regle.getDureeJours());
-    
+        LocalDate dateRetourAjustee = calendrierService.ajusterDate(retour);
+
+        boolean dispo = reservationService.isLivreDisponible(livre,debut);
+        if(dispo) return "Aucun exemplaire disponible pour ce livre";
+
+        // Marquer l’exemplaire comme non disponible
         exemplaireDispo.setDisponible(false);
         exemplaireRepository.save(exemplaireDispo);
 
-        LocalDate dateRetourAjustee = calendrierService.ajusterDate(retour);
-    
+        // Création du prêt
         Pret pret = new Pret();
         pret.setAdherent(adherent);
         pret.setExemplaire(exemplaireDispo);
         pret.setDateDebut(debut);
         pret.setDateRetour(dateRetourAjustee);
+
         TypePret typePretEntity = typePretRepository.findById(typePret).orElse(null);
         if (typePretEntity == null) return "Type de prêt inconnu";
         pret.setTypePret(typePretEntity);
 
         pretRepository.save(pret);
-    
-        return "Prêt enregistré. Retour prévu le : " + retour;
+
+        return "Prêt enregistré. Retour prévu le : " + dateRetourAjustee;
     }
 
     public boolean estExemplaireDisponiblePourProlongement(Exemplaire exemplaire, LocalDate nouvelleDateFin) {
@@ -196,7 +235,7 @@ public class PretService {
         return pretRepository.findAll();
     }
          
-    public boolean rendrePret(int idPret) {
+    public boolean rendrePret(int idPret,LocalDate dateRendu) {
         Optional<Pret> optionalPret = getPretById(idPret);
     
         if (optionalPret.isPresent()) {
@@ -210,6 +249,11 @@ public class PretService {
             Exemplaire exemplaire = pret.getExemplaire();
             exemplaire.setDisponible(true);
             exemplaireRepository.save(exemplaire);
+
+            Rendu rendu = new Rendu();
+            rendu.setPret(pret);
+            rendu.setDateRendu(dateRendu);
+            renduRepository.save(rendu);
     
             // Vérifier s’il y a eu un retard
             LocalDate dateRetourTheorique = pret.getDateRetour();

@@ -2,12 +2,15 @@ package org.example.controller;
 
 import org.example.models.ReglePret;
 import org.example.models.RegleReport;
+import org.example.models.TypeAdherent;
 import org.example.repository.ReglePretRepository;
 import org.example.repository.RegleReportRepository;
+import org.example.repository.RegleReservationRepository;
 import org.example.repository.PretRepository;
 import org.example.repository.LivreRepository;
 import org.example.repository.AdherentRepository;
 import org.example.repository.ReservationRepository;
+import org.example.repository.TypeAdherentRepository;
 import org.example.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,7 +37,13 @@ public class AdminController {
     private AdherentRepository adherentRepository;
 
     @Autowired
+    private TypeAdherentRepository typeAdherentRepository;
+
+    @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private RegleReservationRepository regleReservationRepository;
 
     @Autowired
     private ReservationService reservationService;
@@ -67,6 +76,8 @@ public class AdminController {
 
         model.addAttribute("regleReport", regleReport);
         model.addAttribute("reglePrets", reglePretRepository.findAll());
+        model.addAttribute("regleReservations", regleReservationRepository.findAll());
+        model.addAttribute("typeAdherents", typeAdherentRepository.findAll());
 
         return "config";
     }
@@ -85,6 +96,29 @@ public class AdminController {
         ReglePret regle = reglePretRepository.findById(id).orElseThrow(() -> new RuntimeException("Règle introuvable"));
         regle.setDureeJours(dureeJours);
         reglePretRepository.save(regle);
+        return "redirect:/admin/config";
+    }
+    @PostMapping("/config/updateRegleReservation")
+    public String modifierRegleReservation(@RequestParam("id") int id, @RequestParam("quotaMax") int quotaMax) {
+        var regle = regleReservationRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Règle de réservation introuvable"));
+        regle.setQuotaMax(quotaMax);
+        regleReservationRepository.save(regle);
+        return "redirect:/admin/config";
+    }
+
+
+    @PostMapping("/config/typeAdherent")
+    public String ajouterOuMettreAJourTypeAdherent(
+            @RequestParam String nom,
+            @RequestParam Integer quotaMax,
+            @RequestParam Integer joursPenalite) {
+        TypeAdherent type = typeAdherentRepository.findById(nom)
+            .orElse(new TypeAdherent());
+        type.setNom(nom);
+        type.setQuotaMax(quotaMax);
+        type.setJoursPenalite(joursPenalite);
+        typeAdherentRepository.save(type);
         return "redirect:/admin/config";
     }
 

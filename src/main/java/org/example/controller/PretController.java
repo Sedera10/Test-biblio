@@ -47,6 +47,7 @@ public class PretController {
             @RequestParam("idAdherent") int idAdherent,
             @RequestParam("idLivre") int idLivre,
             @RequestParam("typePret") String typePret,
+            @RequestParam(value = "datePret", required = false)  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate datePret,
             Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -55,7 +56,7 @@ public class PretController {
             pretService.verifierPenaliteAvantPret(idAdherent);
 
             // ➤ Tente de faire le prêt
-            String message = pretService.effectuerPret(idAdherent, idLivre, typePret);
+            String message = pretService.effectuerPret(idAdherent, idLivre, typePret,datePret);
             redirectAttributes.addFlashAttribute("message", message);
         } catch (IllegalStateException ex) {
             // ➤ Si pénalité ou retard détecté, affiche l'erreur
@@ -84,8 +85,10 @@ public class PretController {
     }
 
     @PostMapping("/rendre")
-    public String rendrePret(@RequestParam("idPret") int idPret, RedirectAttributes redirectAttributes) {
-        boolean rendu = pretService.rendrePret(idPret);
+    public String rendrePret(@RequestParam("idPret") int idPret, 
+                        @RequestParam("dateRendu") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateRendu,
+                        RedirectAttributes redirectAttributes) {
+        boolean rendu = pretService.rendrePret(idPret,dateRendu);
 
         if (rendu) {
             redirectAttributes.addFlashAttribute("message", "Livre rendu avec succès.");

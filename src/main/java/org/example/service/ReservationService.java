@@ -95,7 +95,7 @@ public class ReservationService {
             throw new RuntimeException("Quota de réservation atteint.");
         }
 
-        if (!isExemplaireDisponible(reservation.getLivre(), reservation.getDateReservation())) {
+        if (!isLivreDisponible(reservation.getLivre(), reservation.getDateReservation())) {
             throw new RuntimeException("Aucun exemplaire disponible pour les dates indiquées.");
         }
 
@@ -125,20 +125,28 @@ public class ReservationService {
         }
 
         // 4. Vérifier la disponibilité d’un exemplaire
-        if (!isExemplaireDisponible(reservation.getLivre(), reservation.getDateReservation())) {
+        if (!isLivreDisponible(reservation.getLivre(), reservation.getDateReservation())) {
             throw new IllegalStateException("Aucun exemplaire disponible pour ces dates.");
         }
 
         return true;
     }
 
-    public boolean isExemplaireDisponible(Livre livre, LocalDate dateDebut) {
+    public boolean isLivreDisponible(Livre livre, LocalDate dateDebut) {
         int idLivre = livre.getId();
 
-        boolean dispoPret = !exemplaireRepository.findDisponiblesSelonPret(idLivre, dateDebut).isEmpty();
-        boolean dispoReservation = !exemplaireRepository.findDisponiblesSelonReservation(idLivre, dateDebut).isEmpty();
+        List<Exemplaire> libresPret = exemplaireRepository.findDisponiblesSelonPret(idLivre, dateDebut);
+        List<Exemplaire> libresReservation = exemplaireRepository.findDisponiblesSelonReservation(idLivre, dateDebut);
 
-        return dispoPret && dispoReservation;
+        // On garde ceux présents dans les deux listes (intersection)
+        for (Exemplaire e : libresPret) {
+            if (libresReservation.contains(e)) {
+                return true;
+            }
+        }
+
+        return false;
     }
+
 
 }

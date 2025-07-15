@@ -130,7 +130,21 @@
                                                 </form>
                                                 <form method="post" action="${pageContext.request.contextPath}/pret/rendre" class="d-inline">
                                                     <input type="hidden" name="idPret" value="${p.id}" />
-                                                    <button type="submit" class="btn btn-sm btn-outline-primary">Rendre</button>
+                                                    <!-- Bouton qui affiche le formulaire de rendu -->
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="afficherFormulaireRendu('${p.id}')">
+                                                        Rendre
+                                                    </button>
+
+                                                    <!-- Formulaire caché pour choisir la date de rendu -->
+                                                    <div id="form-rendu-${p.id}" style="display:none;" class="mt-2">
+                                                        <form method="post" action="${pageContext.request.contextPath}/pret/rendre">
+                                                            <input type="hidden" name="idPret" value="${p.id}" />
+                                                            <label for="dateRendu-${p.id}">Date de rendu :</label>
+                                                            <input type="date" name="dateRendu" id="dateRendu-${p.id}" class="form-control mb-2" required />
+                                                            <button type="submit" class="btn btn-sm btn-success">OK</button>
+                                                            <button type="button" class="btn btn-sm btn-secondary" onclick="cacherFormulaireRendu('${p.id}')">Annuler</button>
+                                                        </form>
+                                                    </div>
                                                 </form>
                                             </c:if>
                                         </td>
@@ -150,6 +164,14 @@
     document.querySelector('.js-sidebar-toggle')?.addEventListener('click', () => {
         document.querySelector('.wrapper')?.classList.toggle('sidebar-collapsed');
     });
+
+    function afficherFormulaireRendu(id) {
+        document.getElementById('form-rendu-' + id).style.display = 'block';
+    }
+
+    function cacherFormulaireRendu(id) {
+        document.getElementById('form-rendu-' + id).style.display = 'none';
+    }
 </script>
 </body>
 </html>

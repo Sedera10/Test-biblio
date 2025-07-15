@@ -37,6 +37,12 @@ public interface PretRepository extends JpaRepository<Pret, Integer> {
 
     boolean existsByAdherent_IdAndRenduFalseAndDateRetourBefore(Integer idAdherent, LocalDate dateLimite);
     
+    @Query("""
+        SELECT COUNT(p) FROM Pret p
+        WHERE p.adherent.id = :idAdherent AND p.rendu = false
+    """)
+    long countPretsEnCoursParAdherent(@Param("idAdherent") Integer idAdherent);
+
 }
 
 

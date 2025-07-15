@@ -144,3 +144,10 @@ CREATE TABLE admin (
 ALTER TABLE adherent ADD COLUMN motDePasse VARCHAR(100);
 ALTER TABLE adherent ADD COLUMN date_fin_penalite DATE;
 
+CREATE TABLE rendu (
+    id_rendu SERIAL PRIMARY KEY,
+    id_pret INT NOT NULL,
+    date_rendu DATE NOT NULL,
+    FOREIGN KEY (id_pret) REFERENCES pret(id_pret) ON DELETE CASCADE
+);
+

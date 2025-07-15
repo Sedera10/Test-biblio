@@ -12,6 +12,16 @@
 
         <ul class="sidebar-nav">
             <li class="sidebar-header">
+                Tableau de bord
+            </li>
+            <c:if test="${not empty sessionScope.admin}">
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="${pageContext.request.contextPath}/admin/dashboard">
+                        <span class="align-middle">Dashboard</span>
+                    </a>
+                </li>
+            </c:if>
+            <li class="sidebar-header">
                 Gestion de prêt
             </li>
             <li class="sidebar-item">

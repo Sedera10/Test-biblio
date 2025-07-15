@@ -84,6 +84,10 @@
                             <label class="form-check-label" for="domicile">À domicile</label>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date pret :</label>
+                        <input type="date" class="form-control" name="datePret"/>
+                    </div>
 
                     <div class="text-end">
                         <button type="submit" class="btn btn-primary">
