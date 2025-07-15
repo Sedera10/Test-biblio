@@ -12,6 +12,23 @@ public class DetailAdherentDTO {
     private long resteQuota;
     private boolean penalise;
     private LocalDate dateFinPenalite;
+    private boolean isAbonne;
+
+    // Constructeur 
+    public DetailAdherentDTO(Integer id, String nom, String email, String typeAdherent,
+                             Integer quotaMax, long nombrePretEnCours, long resteQuota,
+                             boolean penalise, LocalDate dateFinPenalite, boolean isAbonne) {
+        this.id = id;
+        this.nom = nom;
+        this.email = email;
+        this.typeAdherent = typeAdherent;
+        this.quotaMax = quotaMax;
+        this.nombrePretEnCours = nombrePretEnCours;
+        this.resteQuota = resteQuota;
+        this.penalise = penalise;
+        this.dateFinPenalite = dateFinPenalite;
+        this.isAbonne = isAbonne;
+    }
 
     // Getters et Setters
     public LocalDate getDateFinPenalite() {
@@ -40,6 +57,13 @@ public class DetailAdherentDTO {
     }
     public boolean isPenalise() {
         return penalise;
+    }
+    public boolean isAbonne() {
+        return isAbonne;
+    }
+
+    public void setAbonne(boolean isAbonne) {
+        this.isAbonne = isAbonne;
     }
     
     public void setDateFinPenalite(LocalDate dateFinPenalite) {

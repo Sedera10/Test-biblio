@@ -35,6 +35,9 @@ public class Adherent {
     @OneToMany(mappedBy = "adherent", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Pret> prets;
 
+    @OneToMany(mappedBy = "adherent", cascade = CascadeType.ALL)
+    private Set<Inscription> inscriptions;
+
     @Column(name = "date_fin_penalite")
     private LocalDate dateFinPenalite;
 
@@ -84,11 +87,17 @@ public class Adherent {
         this.typeAdherent = typeAdherent;
     }
 
-    public LocalDate getInscription() {
+    public LocalDate getInscription()  {
         return inscription;
     }
     public void setInscription(LocalDate inscription) {
         this.inscription = inscription;
+    }
+    public Set<Inscription> getInscriptions() {
+        return inscriptions;
+    }
+    public void setInscriptions(Set<Inscription> inscriptions) {
+        this.inscriptions = inscriptions;
     }
 
     public Double getPenalites() {
