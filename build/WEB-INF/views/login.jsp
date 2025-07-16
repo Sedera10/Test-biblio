@@ -45,11 +45,11 @@
                 </div>
                 <span>or use your email for registration</span>
                 <input type="text" name="nom" placeholder="Name" />
-                <input type="email" placeholder="Email" />
-                <input type="password" placeholder="Password" />
+                <input type="email" placeholder="Email" name="email" />
+                <input type="password" placeholder="Password" name="motDePasse" />
                 <c:if test="${not empty typesAdherent}">
                     <select class="form-select" name="typeAdherent" required>
-                        <option value="" disabled selected>Profil (Adhérent)</option>
+                        <option value="" disabled selected >Profil (Adhérent)</option>
                         <c:forEach items="${typesAdherent}" var="t">
                             <option value="${t.nom}">${t.nom}</option>
                         </c:forEach>
@@ -67,8 +67,8 @@
                     <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                 </div>
                 <span>or use your account</span>
-                <input type="email" name="email" placeholder="Email" />
-                <input type="password" name="motDePasse" placeholder="Password" />
+                <input type="email" name="email" placeholder="Email" value="sederavalisoarandrianantenaina@gmail.com" />
+                <input type="password" name="motDePasse" placeholder="Password" value="mysuccess" />
                 <a href="#">Forgot your password?</a>
                 <button>Sign In</button>
             </form>

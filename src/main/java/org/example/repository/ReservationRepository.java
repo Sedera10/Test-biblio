@@ -1,5 +1,6 @@
 package org.example.repository;
 
+import org.example.models.Livre;
 import org.example.models.Reservation;
 
 import java.time.LocalDate;
@@ -28,5 +29,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     List<Reservation> findByAdherent_IdAndValideTrue(Integer idAdherent);
 
     long countByAdherent_IdAndValideTrue(Integer idAdherent);
+
+    boolean existsByLivreAndValideTrue(Livre livre);
+
 
 }

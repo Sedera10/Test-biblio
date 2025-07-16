@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,9 @@ public class PretService {
 
     @Autowired
     private LivreRepository livreRepository;
+
+    @Autowired
+    private LivreService livreService;
 
     @Autowired
     private TypePretRepository typePretRepository;
@@ -90,15 +94,20 @@ public class PretService {
     }
 
     public String effectuerPret(int idAdherent, int idLivre, String typePret, LocalDate daty) {
+        daty = (daty != null) ? daty : LocalDate.now();
         Adherent adherent = adherentRepository.findById(idAdherent).orElse(null);
         if (adherent == null) return "Adhérent introuvable";
 
-        if (adherent.getDateFinPenalite() != null && !adherent.getDateFinPenalite().isBefore(LocalDate.now())) {
+        if(calendrierService.estJourFerieOuWeekend(daty)) {
+            throw new RuntimeException("Jour fermé pour cette date");
+        }
+
+        if (adherent.getDateFinPenalite() != null && !adherent.getDateFinPenalite().isBefore(daty)) {
             throw new RuntimeException("L'adhérent a une pénalité en cours.");
         }
 
         Inscription inscription = inscriptionRepository.findTopByAdherentOrderByDateFinDesc(adherent);
-        if (inscription == null || inscription.getDateFin().isBefore(LocalDate.now())) {
+        if (inscription == null || inscription.getDateFin().isBefore(daty)) {
             return "L'abonnement n'est plus valide.";
         }
 
@@ -113,7 +122,7 @@ public class PretService {
         if (livre == null) return "Livre introuvable";
 
         List<Exemplaire> disponibles = exemplaireRepository.findExemplairesDisponiblesParLivre(idLivre);
-        if (disponibles.isEmpty()) return "Aucun exemplaire disponible";
+        if (disponibles.isEmpty()) throw new RuntimeException("Aucun exemplaire disponible");
 
         Exemplaire exemplaireDispo = disponibles.get(0);
 
@@ -169,29 +178,64 @@ public class PretService {
         return conflitsProlong.isEmpty();
     }
 
-    public boolean prolongerPret(int idPret, LocalDate nouvelleDate) {
+    public String prolongerPret(int idPret, LocalDate nouvelleDate) {
         Optional<Pret> optionalPret = pretRepository.findById(idPret);
-        if (optionalPret.isEmpty()) return false;
-
+        if (optionalPret.isEmpty()) {
+             throw new RuntimeException ("Prêt introuvable.");
+        }
         Pret pret = optionalPret.get();
         Exemplaire exemplaire = pret.getExemplaire();
         LocalDate ancienneDate = pret.getDateRetour();
 
-        // Vérifie la disponibilité de l'exemplaire
-        if (!estExemplaireDisponiblePourProlongement(exemplaire, nouvelleDate)) {
-            return false;
+        Inscription inscription = inscriptionRepository.findTopByAdherentOrderByDateFinDesc(pret.getAdherent());
+        if (inscription == null || inscription.getDateFin().isBefore(nouvelleDate)) {
+            return "L'abonnement n'est plus valide.";
         }
 
-        // Enregistre le prolongement
+        // Vérifie la disponibilité de l'exemplaire à la nouvelle date
+        if (!livreService.isExemplaireDispo(exemplaire, nouvelleDate)) {
+            throw new RuntimeException("Exemplaire non disponible à cette date indiquée.");
+        }
+
+        // Récupère la règle de prêt
+        ReglePret regle = reglePretRepository.findRegle(
+            pret.getAdherent().getTypeAdherent().getNom(),
+            pret.getTypePret().getType()
+        );
+        if (regle == null) {
+            throw new RuntimeException("Aucune règle de prêt définie pour ce type d'adhérent et ce type de prêt.");
+        }
+
+        int dureeMax = regle.getDureeJours();
+        long joursDemande = ChronoUnit.DAYS.between(ancienneDate, nouvelleDate);
+
+        if (joursDemande > dureeMax) {
+            throw new RuntimeException("La durée de prolongement demandée (" + joursDemande + " jours) dépasse la durée autorisée (" + dureeMax + " jours).");
+        }
+
+        boolean aEteAjustee = false;
+        LocalDate dateInitiale = nouvelleDate;
+
+        if (calendrierService.estJourFerieOuWeekend(nouvelleDate)) {
+            nouvelleDate = calendrierService.ajusterDate(nouvelleDate);
+            aEteAjustee = true;
+        }
+
+        // Enregistrement du prolongement
         Prolongement prolongement = new Prolongement(pret, ancienneDate, nouvelleDate);
         prolongementRepository.save(prolongement);
 
-        // Met à jour la date de retour dans le prêt
+        // Mise à jour du prêt
         pret.setDateRetour(nouvelleDate);
         pretRepository.save(pret);
 
-        return true;
+        if (aEteAjustee) {
+            return "Prolongement fait ! Retour du livre le " + nouvelleDate + " : raison (" + dateInitiale + " est un jour fermé)";
+        } else {
+            return "Prolongement fait ! Retour du livre le " + nouvelleDate;
+        }
     }
+
 
     public List<Pret> rechercher(Integer idAdherent, LocalDate dateDebut, LocalDate dateFin, String etat) {
         boolean filtrerAdherent = idAdherent != null;
@@ -341,4 +385,5 @@ public class PretService {
             throw new IllegalStateException("Adhérent a un prêt en retard non encore rendu");
         }
     } 
+
 }

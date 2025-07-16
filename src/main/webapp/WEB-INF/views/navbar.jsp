@@ -10,11 +10,11 @@
         </a>
         <!-- Prêts -->
 
-        <ul class="sidebar-nav">
-            <li class="sidebar-header">
-                Tableau de bord
-            </li>
+        <ul class="sidebar-nav">        
             <c:if test="${not empty sessionScope.admin}">
+                <li class="sidebar-header">
+                    Tableau de bord
+                </li>
                 <li class="sidebar-item">
                     <a class="sidebar-link" href="${pageContext.request.contextPath}/admin/dashboard">
                         <span class="align-middle">Dashboard</span>

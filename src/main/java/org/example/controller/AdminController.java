@@ -12,6 +12,7 @@ import org.example.repository.AdherentRepository;
 import org.example.repository.ReservationRepository;
 import org.example.repository.TypeAdherentRepository;
 import org.example.service.ReservationService;
+import org.example.service.ResetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,6 +48,9 @@ public class AdminController {
 
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private ResetService resetService;
 
     @GetMapping("/dashboard")
     public String afficherDashboard(Model model) {
@@ -138,6 +142,14 @@ public class AdminController {
         reservationRepository.deleteById(id);
         redirectAttributes.addFlashAttribute("message", "Réservation annulée.");
         return "redirect:/admin/dashboard";
+    }
+
+    // Reinitialisation de données
+    @PostMapping("/reset-data")
+    public String resetData(RedirectAttributes redirectAttributes) {
+        resetService.reset();
+        redirectAttributes.addFlashAttribute("success", "Données réinitialisées avec succès.");
+        return "redirect:/admin/dashboard"; // ou où tu veux revenir
     }
 
 }

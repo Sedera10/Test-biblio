@@ -19,5 +19,14 @@ public interface ProlongementRepository extends JpaRepository<Prolongement, Inte
     """)
     List<Prolongement> findConflits(@Param("idExemplaire") int idExemplaire, @Param("dateFin") LocalDate dateFin);
 
+    @Query("""
+        SELECT COUNT(p) FROM Prolongement p
+        WHERE p.pret.adherent.id = :idAdherent
+        AND p.pret.id NOT IN (
+            SELECT r.pret.id FROM Rendu r
+        )
+    """)
+    int countProlongementsActifsByAdherent(@Param("idAdherent") int idAdherent);
+
 }
 

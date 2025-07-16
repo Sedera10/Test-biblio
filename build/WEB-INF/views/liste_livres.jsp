@@ -70,6 +70,9 @@
                                 <c:otherwise>Non</c:otherwise>
                             </c:choose>
                         </p>
+                        <a href="${pageContext.request.contextPath}/api/livres/{a.id}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
 
                         <div class="table-responsive">
                             <table class="table table-hover">

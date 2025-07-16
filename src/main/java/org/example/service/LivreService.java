@@ -2,11 +2,15 @@ package org.example.service;
 
 import org.example.models.Exemplaire;
 import org.example.models.Livre;
+import org.example.models.Reservation;
 import org.example.repository.LivreRepository;
+import org.example.repository.PretRepository;
+import org.example.repository.ReservationRepository;
 import org.example.repository.ExemplaireRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -14,6 +18,12 @@ public class LivreService {
 
     @Autowired
     private LivreRepository livreRepository;
+
+    @Autowired
+    private PretRepository pretRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private ExemplaireRepository exemplaireRepository;
@@ -44,5 +54,11 @@ public class LivreService {
 
     public Livre findByIsbn(String isbn) {
         return livreRepository.findByIsbn(isbn);
+    }
+
+    public boolean isExemplaireDispo(Exemplaire exemplaire,LocalDate daty){
+        int idLivre = exemplaire.getLivre().getId();
+        List<Exemplaire> disponibles = exemplaireRepository.findExemplairesDisponiblesParLivre(idLivre);
+        return disponibles.contains(exemplaire);
     }
 }

@@ -19,6 +19,13 @@ public class ReglePret {
     @Column(name = "duree_jours")
     private int dureeJours;
 
+    public ReglePret(){}
+
+    public ReglePret(String typeAdherent , String typePret, int dureeJours){
+        this.typeAdherent = typeAdherent;
+        this.typePret = typePret;
+        this.dureeJours = dureeJours;
+    }
     // === Getters et Setters ===
 
     public Long getId() {

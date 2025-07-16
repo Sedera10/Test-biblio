@@ -27,6 +27,7 @@ CREATE TABLE typeadherent (
     quota_max INT,
     jours_penalite INT
 );
+ALTER TABLE typeadherent ADD COLUMN prolongement_max INT;
 
 CREATE TABLE adherent (
     id_adherent SERIAL PRIMARY KEY,

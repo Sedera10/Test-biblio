@@ -68,7 +68,7 @@
                         <label class="form-label">Exemplaire</label>
                         <select name="idLivre" class="form-select" required>
                             <c:forEach items="${livres}" var="e">
-                                <option value="${e.id}">Livre : ${e.titre} (id:${e.id})</option>
+                                <option value="${e.id}">Livre : ${e.titre}</option>
                             </c:forEach>
                         </select>
                     </div>

@@ -22,6 +22,10 @@ public class InscriptionService {
         Inscription derniere = getDerniereInscription(adherent);
         return derniere != null && derniere.getDateFin().isAfter(LocalDate.now());
     }
+     public boolean estAbonne(Adherent adherent,LocalDate daty) {
+        Inscription derniere = getDerniereInscription(adherent);
+        return derniere != null && derniere.getDateFin().isAfter(daty);
+    }
 
     public void enregistrerInscription(Inscription inscription) {
         inscriptionRepository.save(inscription);

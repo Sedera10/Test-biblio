@@ -14,6 +14,9 @@ public class TypeAdherent {
     @Column(name = "quota_max")
     private Integer quotaMax;
 
+    @Column(name = "prolongement_max")
+    private Integer prolongementMax;
+
     @OneToMany(mappedBy = "typeAdherent", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Adherent> adherents;
 
@@ -70,5 +73,11 @@ public class TypeAdherent {
 
     public void setJoursPenalite(Integer joursPenalite) {
         this.joursPenalite = joursPenalite;
+    }
+    public Integer getProlongementMax() {
+        return prolongementMax;
+    }
+    public void setProlongementMax(Integer prolongementMax) {
+        this.prolongementMax = prolongementMax;
     }
 }

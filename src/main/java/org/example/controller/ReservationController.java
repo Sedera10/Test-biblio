@@ -46,7 +46,7 @@ public class ReservationController {
         int idLivre = Integer.parseInt(request.getParameter("idLivre"));
         String typePret = request.getParameter("typePret");
         LocalDate dateDebut = LocalDate.parse(request.getParameter("dateReservation"));
-        LocalDate dateFin = typePret.equals("domicile") ? LocalDate.parse(request.getParameter("dateFinReservation")) : dateDebut;
+        LocalDate dateFin = dateDebut;
 
         boolean success = reservationService.effectuerReservation(idAdherent, idLivre, typePret, dateDebut, dateFin);
 

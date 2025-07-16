@@ -91,7 +91,7 @@
                                         <td><fmt:formatDate value="${a.inscription}" pattern="dd/MM/yyyy"/></td>
                                         <td>${a.penalites}</td>
                                         <td>
-                                            <a href="${pageContext.request.contextPath}/adherent/details/${a.id}" class="btn btn-sm btn-outline-primary">
+                                            <a href="${pageContext.request.contextPath}/api/adherents/${a.id}" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             <a href="${pageContext.request.contextPath}/adherent/modifier/${a.id}" class="btn btn-sm btn-outline-primary">

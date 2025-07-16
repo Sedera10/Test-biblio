@@ -49,6 +49,12 @@
         <main class="content">
             <div class="glass-form">
                 <h3 class="mb-4">Prolongement du prêt</h3>
+                <c:if test="${not empty erreur}">
+                    <div class="alert alert-danger">${erreur}</div>
+                </c:if>
+                <c:if test="${not empty message}">
+                    <div class="alert alert-success">${message}</div>
+                </c:if>
 
                 <form method="post" action="${pageContext.request.contextPath}/prolongement/valider">
                     <div class="mb-3">

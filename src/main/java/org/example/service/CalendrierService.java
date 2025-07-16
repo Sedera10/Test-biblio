@@ -18,9 +18,7 @@ public class CalendrierService {
     @Autowired private RegleReportRepository regleReportRepository;
 
     public boolean estJourFerieOuWeekend(LocalDate date) {
-        return jourFerieRepository.existsByDate(date) ||
-               date.getDayOfWeek() == DayOfWeek.SATURDAY ||
-               date.getDayOfWeek() == DayOfWeek.SUNDAY;
+        return jourFerieRepository.existsByDate(date) || date.getDayOfWeek() == DayOfWeek.SUNDAY;
     }
 
     public LocalDate ajusterDate(LocalDate date) {

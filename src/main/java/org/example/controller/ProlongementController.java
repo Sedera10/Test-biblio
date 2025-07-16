@@ -3,8 +3,10 @@ package org.example.controller;
 import org.example.service.PretService;
 import org.example.models.Adherent;
 import org.example.models.Pret;
+import org.example.models.Prolongement;
 import org.example.repository.AdherentRepository;
 import org.example.repository.PretRepository;
+import org.example.repository.ProlongementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -20,6 +22,9 @@ public class ProlongementController {
 
     @Autowired
     private AdherentRepository adherentRepository;
+
+    @Autowired
+    private ProlongementRepository prolongementRepository;
 
     @Autowired
     private PretRepository pretRepository;
@@ -40,12 +45,24 @@ public class ProlongementController {
     public String validerProlongement(@RequestParam("idPret") int idPret,
                                       @RequestParam("nouvelleDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate nouvelleDate,
                                       RedirectAttributes redirectAttributes) {
-        boolean dispo = pretService.prolongerPret(idPret, nouvelleDate);
-        if (dispo) {
-            redirectAttributes.addFlashAttribute("message", "Prolongement réussi !");
-        } else {
-            redirectAttributes.addFlashAttribute("message", "Impossible de prolonger : le livre est réservé ou déjà prêt !");
+        Pret pret = pretRepository.findById(idPret).orElse(null);
+        int nombreProlongements = prolongementRepository.countProlongementsActifsByAdherent(pret.getAdherent().getId());
+        int quotaProlongement = pret.getAdherent().getTypeAdherent().getProlongementMax();
+
+        pretService.verifierPenaliteAvantPret(pret.getAdherent().getId());
+
+        try {
+            String dispo = pretService.prolongerPret(idPret, nouvelleDate);
+            redirectAttributes.addFlashAttribute("message", dispo);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("erreur", e.getMessage());
         }
+        
+        if (nombreProlongements >= quotaProlongement) {
+            redirectAttributes.addFlashAttribute("erreur", "Quota de prolongements atteint pour l'adhérent.");
+            return "/prolongement/form";
+        }
+
         return "redirect:/pret/liste";
     }
 }

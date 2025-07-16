@@ -1,5 +1,6 @@
 package org.example.repository;
 
+import org.example.models.Exemplaire;
 import org.example.models.Pret;
 
 import java.time.LocalDate;
@@ -42,6 +43,9 @@ public interface PretRepository extends JpaRepository<Pret, Integer> {
         WHERE p.adherent.id = :idAdherent AND p.rendu = false
     """)
     long countPretsEnCoursParAdherent(@Param("idAdherent") Integer idAdherent);
+
+    boolean existsByExemplaireAndRenduFalse(Exemplaire exemplaire);
+
 
 }
 
